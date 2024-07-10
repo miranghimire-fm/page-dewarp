@@ -39,11 +39,15 @@ def optimise_params(name, small, dstpoints, span_counts, params, debug_lvl):
         debug_show(name, 4, "keypoints before", display)
     print("  optimizing", len(params), "parameters...")
     start = dt.now()
+    params[6] = 0
+    params[7] = 0
     res = minimize(objective, params, method="Powell")
     end = dt.now()
     print(f"  optimization took {round((end - start).total_seconds(), 2)} sec.")
     print(f"  final objective is {res.fun}")
     params = res.x
+    params[6] = 0
+    params[7] = 0
     if debug_lvl >= 1:
         projpts = project_keypoints(params, keypoint_index)
         display = draw_correspondences(small, dstpoints, projpts)

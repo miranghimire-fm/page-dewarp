@@ -43,7 +43,11 @@ class WarpedImage:
     def __init__(self, imgfile: str | Path):
         if isinstance(imgfile, Path):
             imgfile = str(imgfile)
-        self.cv2_img = imread(imgfile)
+        if not isinstance(imgfile, np.ndarray):
+            self.cv2_img = imread(imgfile)
+        else:
+            self.cv2_img = imgfile
+            imgfile = "test.png"
         self.file_path = Path(imgfile).resolve()
         self.small = self.resize_to_screen()
         size, resized = self.size, self.resized
@@ -57,6 +61,7 @@ class WarpedImage:
         # Skip if no spans
         if len(spans) < 1:
             print(f"skipping {self.stem} because only {len(spans)} spans")
+            pass
         else:
             span_points = sample_spans(self.small.shape, spans)
             n_pts = sum(map(len, span_points))
@@ -69,6 +74,9 @@ class WarpedImage:
                 corners, ycoords, xcoords
             )
             dstpoints = np.vstack((corners[0].reshape((1, 1, 2)),) + tuple(span_points))
+
+            # print(f"Dstpoints: {dstpoints}")
+            # print(f"Params: {params}")
             params = optimise_params(
                 self.stem,
                 self.small,
@@ -88,6 +96,7 @@ class WarpedImage:
     def threshold(self, page_dims, params):
         remap = RemappedImage(self.stem, self.cv2_img, self.small, page_dims, params)
         self.outfile = remap.threshfile
+        self.outimg = remap.pil_image
 
     def iteratively_assemble_spans(self):
         """

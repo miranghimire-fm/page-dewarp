@@ -21,6 +21,12 @@ def get_default_params(corners, ycoords, xcoords):
     # estimate rotation and translation from four 2D-to-3D point correspondences
     _, rvec, tvec = solvePnP(corners_object3d, corners, K(), np.zeros(5))
     span_counts = [*map(len, xcoords)]
+
+    # print(f"Rvec: {rvec}, Length:{len(rvec)}")
+    # print(f"Tvec: {tvec}, Length: {len(tvec)}")
+    # print(f"f:Cubic Slopes: {cubic_slopes}")
+    # print(f"Y coords: {ycoords}, Length: {len(ycoords)}")
+    # print(f"X coords: {xcoords}, Length: {xcoords}")
     params = np.hstack(
         (
             np.array(rvec).flatten(),
@@ -30,4 +36,5 @@ def get_default_params(corners, ycoords, xcoords):
         )
         + tuple(xcoords)
     )
+    # print(f"Initial Default: {params}")
     return (page_width, page_height), span_counts, params

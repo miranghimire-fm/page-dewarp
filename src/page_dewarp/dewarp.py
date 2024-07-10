@@ -3,7 +3,9 @@ from cv2 import (
     ADAPTIVE_THRESH_MEAN_C,
     BORDER_REPLICATE,
     COLOR_RGB2GRAY,
+    COLOR_BGR2RGB,
     INTER_AREA,
+    INTER_LINEAR,
     INTER_CUBIC,
     THRESH_BINARY,
     adaptiveThreshold,
@@ -58,12 +60,14 @@ class RemappedImage:
         image_y_coords = resize(
             image_y_coords, (width, height), interpolation=INTER_CUBIC
         )
-        img_gray = cvtColor(img, COLOR_RGB2GRAY)
+        # img_gray = cvtColor(img, COLOR_RGB2GRAY)
+        img_gray = cvtColor(img, COLOR_BGR2RGB)
+
         remapped = remap(
             img_gray,
             image_x_coords,
             image_y_coords,
-            INTER_CUBIC,
+            INTER_LINEAR,
             None,
             BORDER_REPLICATE,
         )
@@ -82,6 +86,9 @@ class RemappedImage:
             pil_image = Image.fromarray(thresh)
             pil_image = pil_image.convert("1")
         self.threshfile = name + "_thresh.png"
+        self.pil_image = pil_image
+
+        """
         pil_image.save(
             self.threshfile,
             dpi=(cfg.output_opts.OUTPUT_DPI, cfg.output_opts.OUTPUT_DPI),
@@ -91,3 +98,6 @@ class RemappedImage:
             width = int(round(height * float(thresh.shape[1]) / thresh.shape[0]))
             display = resize(thresh, (width, height), interpolation=INTER_AREA)
             debug_show(name, 6, "output", display)
+        #"""
+
+
